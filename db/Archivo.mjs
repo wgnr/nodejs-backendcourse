@@ -18,6 +18,20 @@ export default class Archivo {
     }
   }
 
+  async #writeFile() {
+    try {
+      await fs.promises.writeFile(
+        this.fileName,
+        JSON.stringify(this.#productos),
+        "utf-8"
+      );
+    } catch (error) {
+      console.error("Error in saving product", error);
+      return false;
+    }
+    return true;
+  }
+
   async getAll() {
     await this.#readFile();
     return this.#productos;
@@ -40,19 +54,29 @@ export default class Archivo {
 
     this.#productos.push(newProducto);
 
-    try {
-      await fs.promises.writeFile(
-        this.fileName,
-        JSON.stringify(this.#productos),
-        "utf-8"
-      );
-      return newProducto;
-    } catch (error) {
-      console.error("Error in saving product", error);
-    }
+    return (await this.#writeFile()) ? newProducto : null;
   }
 
-  async delete() {
+  async update(id, body) {
+    await this.#readFile();
+    const productToUpdate = this.#productos.find((p) => p.id === id);
+    if (!productToUpdate) return;
+
+    for (const [k, v] of Object.entries(body)) productToUpdate[k] = v;
+
+    return (await this.#writeFile()) ? productToUpdate : null;
+  }
+
+  async delete(id) {
+    await this.#readFile();
+    const productToDelete = this.#productos.find((p) => p.id === id);
+    if (!productToDelete) return;
+
+    this.#productos = this.#productos.filter((p) => p.id !== id);
+    return (await this.#writeFile()) ? productToDelete : null;
+  }
+
+  async deleteFile() {
     try {
       await fs.promises.unlink(this.fileName);
     } catch (e) {
