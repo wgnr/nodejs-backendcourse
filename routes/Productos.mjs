@@ -29,7 +29,7 @@ router.post("", async (req, res) => {
       .status(500)
       .json({ error: "No se ha podido crear el producto." });
 
-  res.json(newProduct);
+  res.redirect(302, "/");
 });
 
 router.put("/:id", async (req, res) => {

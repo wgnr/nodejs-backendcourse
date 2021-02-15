@@ -1,0 +1,22 @@
+{{#if showProducts}}
+<table class="tabla-hbs table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Title</th>
+      <th scope="col">Price</th>
+      <th scope="col">Thumbnail</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each productos}}
+    <tr>
+      <td scope="row">{{this.title}}</td>
+      <td>{{this.price}}</td>
+      <td><img src={{this.thumbnail}}></td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{else}}
+<h2 class="alert alert-warning" role="alert">No products has been found.</h2>
+{{/if}}

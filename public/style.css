@@ -4,13 +4,28 @@
   align-items: center;
 }
 
-form{
+form {
   display: grid;
   grid-template-columns: 1fr;
   gap: 32px;
 }
 
-label{
+label {
   display: flex;
   flex-direction: column;
+}
+
+/* HANDLEBARS STYLES*/
+.container-hbs {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+
+.tabla-hbs img {
+  height: 35px;
 }
