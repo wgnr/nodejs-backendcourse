@@ -1,0 +1,19 @@
+extends ./layouts/index.pug
+
+block content
+  if showProducts
+    table.tabla-hbs.table.table-striped
+      thead
+        tr
+          th Title
+          th Price
+          th Thumbnail
+      tbody
+        each product in productos
+          tr
+            td #{product.title}
+            td #{product.price}
+            td
+              img(src=product.thumbnail)
+  else
+    h2.alert.alert-warning="No products has been found."

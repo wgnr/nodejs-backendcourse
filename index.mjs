@@ -1,7 +1,6 @@
 import express from "express";
 import APIroutes from "./routes/index.mjs";
 import path from "path";
-import handlebars from "express-handlebars";
 import fetch from "isomorphic-fetch";
 
 export const __dirname = path.resolve();
@@ -22,20 +21,11 @@ const server = app.listen(PORT, (err) => {
 // An error while serving
 server.on("error", (error) => console.error(`Error in server!!!!!\n${error}`));
 
-// Handlebars...
-app.engine(
-  "hbs",
-  handlebars({
-    extname: ".hbs",
-    defaultLayout: "index.hbs",
-    layoutsDir: __dirname + "/views/layouts",
-    partialsDir: __dirname + "/views/partials",
-  })
-);
-app.set("view engine", "hbs");
-app.set("views  ", "./views");
+// Pug
+app.set("view engine", "pug");
+app.set("views", "./views");
 app.get("/productos/vista", async (req, res) => {
-  // Que desgracia hbs 🤮
+  // Que desgracia pug 🤮, pero mejor que hbs
   let productos;
   try {
     productos = await (
