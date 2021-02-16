@@ -1,0 +1,22 @@
+<% if(showProducts) { %>
+<table class="tabla-hbs table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Title</th>
+      <th scope="col">Price</th>
+      <th scope="col">Thumbnail</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% productos.forEach(function(p){ %>
+    <tr>
+      <td scope="row"><%= p.title %></td>
+      <td><%= p.price %></td>
+      <td><img src="<%= p.thumbnail %>" /></td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+<% } else { %>
+<h2 class="alert alert-warning" role="alert">No products has been found.</h2>
+<% } %>

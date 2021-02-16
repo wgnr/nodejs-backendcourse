@@ -21,11 +21,11 @@ const server = app.listen(PORT, (err) => {
 // An error while serving
 server.on("error", (error) => console.error(`Error in server!!!!!\n${error}`));
 
-// Pug
-app.set("view engine", "pug");
+// ejs
+app.set("view engine", "ejs");
 app.set("views", "./views");
 app.get("/productos/vista", async (req, res) => {
-  // Que desgracia pug 🤮, pero mejor que hbs
+  // ejs, bueno no esta tan mal
   let productos;
   try {
     productos = await (
@@ -36,7 +36,7 @@ app.get("/productos/vista", async (req, res) => {
     productos = [];
   }
 
-  res.render("main", {
+  res.render("./layouts/index", {
     productos,
     showProducts: productos?.length > 0,
   });
