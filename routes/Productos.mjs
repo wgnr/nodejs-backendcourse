@@ -1,6 +1,6 @@
 import express from "express";
 import { db } from "../db/Archivo.mjs";
-
+import { newItemAdded } from "../index.mjs";
 export const router = express.Router();
 
 router.get("", async (req, res) => {
@@ -29,7 +29,8 @@ router.post("", async (req, res) => {
       .status(500)
       .json({ error: "No se ha podido crear el producto." });
 
-  res.json(newProduct);
+  await newItemAdded();
+  res.redirect("/");
 });
 
 router.put("/:id", async (req, res) => {
