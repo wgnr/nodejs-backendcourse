@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import path from "path";
 import APIroutes from "./routes/index.mjs";
 import { db } from "./db/Archivo.mjs";
+import { dbMessages } from "./db/Messages.mjs";
 const __dirname = path.resolve();
 const app = express();
 export const httpServer = createServer(app);
@@ -26,6 +27,8 @@ server.on("error", (error) => console.error(`Error in server!!!!!\n${error}`));
 io.on("connection", async (socket) => {
   // When user connect: pass to him all productos
   socket.emit("products", await generateTable());
+  // Chat messages methods
+  handleMessages(socket);
 });
 
 export async function newItemAdded() {
@@ -63,4 +66,26 @@ export async function generateTable() {
         </table>
       </div>
   `;
+}
+
+// const messages = [];
+
+async function handleMessages(socket) {
+  // Add socket to chat room
+  // I know it's weird, everyone joins the room, but, fo.
+  socket.join("generalChat");
+
+  // First connection send all records
+  const messages = await dbMessages.getAll();
+  socket.emit("chat", messages);
+
+  socket.on("chat", async (from, msg) => {
+    const newMessage = await dbMessages.add({
+      date: new Date().toLocaleString(),
+      msg,
+      from,
+    });
+
+    io.to("generalChat").emit("chat", [newMessage]);
+  });
 }

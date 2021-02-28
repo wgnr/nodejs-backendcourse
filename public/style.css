@@ -29,3 +29,45 @@ label {
 .tabla-table img {
   height: 35px;
 }
+
+/* CHAT STYLES*/
+.chatContainer {
+  background-color: #778899;
+  padding: 15px 25px;
+  border-radius: 5px;
+  margin-bottom: 64px;
+}
+
+li {
+  background-color: transparent !important;
+}
+
+ol {
+  background-color: #b2c1d1;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+
+.chatBtnsContainer {
+  display: flex;
+}
+
+.chatMsgEmail {
+  color: blue;
+  font-weight: bold;
+}
+
+.chatMsgTimestamp {
+  color: brown;
+}
+
+.chatMsgMessage {
+  color: green;
+  font-style: italic;
+}
+
+.chatBtnsContainer>input {
+  margin-left: 6px;
+
+}

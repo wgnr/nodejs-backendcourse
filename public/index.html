@@ -40,13 +40,73 @@
       <br />
       <br />
       <div class="productsContainer"></div>
+      <div class="chatContainer">
+        <h2>Centro de Mensajes</h2>
+        <form action="">
+          <input
+            type="email"
+            name="email"
+            id="email"
+            autocomplete="email"
+            placeholder="Ingrese su email"
+            class="form-control"
+            required
+          />
+          <hr class="dropdown-divider" />
+          <ol class="list-group chatMessages"></ol>
+          <div class="chatBtnsContainer">
+            <input
+              type="text"
+              name="msg"
+              autocomplete="off"
+              placeholder="Ingresá un mensaje..."
+              class="form-control"
+              required
+            /><input type="submit" value="Enviar!" class="btn btn-primary" />
+          </div>
+        </form>
+      </div>
 
       <script src="/socket.io/socket.io.js"></script>
       <script>
-        var io = io();
+        var socket = io();
 
-        io.on("products", (payload) => {
+        socket.on("products", (payload) => {
           document.querySelector(".productsContainer").innerHTML = payload;
+        });
+
+        socket.on("chat", (messages) => {
+          const templateNewMessage = ({ date, msg, from }) => `
+          <li class="list-group-item">
+              <span class="chatMsgEmail">${from}</span>
+              [<span class="chatMsgTimestamp">${date}</span>]:
+              <span class="chatMsgMessage">${msg}</span>
+          </li>
+          `;
+
+          const MessageListDOM = document.querySelector(".chatMessages");
+
+          MessageListDOM.innerHTML += messages
+            .map((m) => templateNewMessage(m))
+            .join("");
+
+          document
+            .querySelector(".chatContainer li:last-child")
+            ?.scrollIntoView({ behavior: "smooth" });
+        });
+
+        // Handle Send Message!
+        const sendMessageEvent = document.querySelector(".chatContainer form");
+        sendMessageEvent.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          const from = document.querySelector("input[name='email']").value;
+          const msg = document.querySelector("input[name='msg']");
+
+          socket.emit("chat", from, msg.value);
+
+          msg.value = "";
+          msg.focus();
         });
       </script>
     </div>
