@@ -1,10 +1,10 @@
 import express from "express";
 import { createServer } from "http";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import path from "path";
-import APIroutes from "./routes/index.mjs";
-import { db } from "./db/Archivo.mjs";
-import { dbMessages } from "./db/Messages.mjs";
+import APIroutes from "./routes/index";
+import { db } from "./db/Archivo";
+import { dbMessages } from "./db/Messages";
 const __dirname = path.resolve();
 const app = express();
 export const httpServer = createServer(app);
@@ -13,12 +13,11 @@ const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(`${__dirname}/public`));
+app.use("/", express.static(`${__dirname}/public`));
 app.use("/api", APIroutes);
 
-const server = httpServer.listen(PORT, (err) => {
-  if (err) console.log("ERROR!", err);
-  console.log(`Server up on port ${server.address().port}`);
+const server = httpServer.listen(PORT, () => {
+  console.log(`Server up on port ${PORT}`);
 });
 
 // An error while serving
@@ -70,7 +69,7 @@ export async function generateTable() {
 
 // const messages = [];
 
-async function handleMessages(socket) {
+async function handleMessages(socket: Socket) {
   // Add socket to chat room
   // I know it's weird, everyone joins the room, but, fo.
   socket.join("generalChat");
