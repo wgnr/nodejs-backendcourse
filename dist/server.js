@@ -46,7 +46,8 @@ var socket_io_1 = require("socket.io");
 var path_1 = __importDefault(require("path"));
 var index_1 = __importDefault(require("./routes/index"));
 var Archivo_1 = require("./db/Archivo");
-var Messages_1 = require("./db/Messages");
+// import { dbMessages } from "./db/Messages";
+var Sqlite3_1 = __importDefault(require("./db/Sqlite3"));
 var __dirname = path_1.default.resolve();
 var app = express_1.default();
 exports.httpServer = http_1.createServer(app);
@@ -61,6 +62,10 @@ var server = exports.httpServer.listen(PORT, function () {
 });
 // An error while serving
 server.on("error", function (error) { return console.error("Error in server!!!!!\n" + error); });
+// CLose DB before exit
+process.on("exit", function () {
+    Sqlite3_1.default.exit();
+});
 exports.io.on("connection", function (socket) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, _b, _c;
     return __generator(this, function (_d) {
@@ -114,7 +119,7 @@ function generateTable() {
     });
 }
 exports.generateTable = generateTable;
-// const messages = [];
+var messages = [];
 function handleMessages(socket) {
     return __awaiter(this, void 0, void 0, function () {
         var messages;
@@ -125,18 +130,18 @@ function handleMessages(socket) {
                     // Add socket to chat room
                     // I know it's weird, everyone joins the room, but, fo.
                     socket.join("generalChat");
-                    return [4 /*yield*/, Messages_1.dbMessages.getAll()];
+                    return [4 /*yield*/, Sqlite3_1.default.getAll()];
                 case 1:
                     messages = _a.sent();
                     socket.emit("chat", messages);
-                    socket.on("chat", function (from, msg) { return __awaiter(_this, void 0, void 0, function () {
+                    socket.on("chat", function (fromUser, msg) { return __awaiter(_this, void 0, void 0, function () {
                         var newMessage;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
-                                case 0: return [4 /*yield*/, Messages_1.dbMessages.add({
+                                case 0: return [4 /*yield*/, Sqlite3_1.default.add({
                                         date: new Date().toLocaleString(),
                                         msg: msg,
-                                        from: from,
+                                        fromUser: fromUser,
                                     })];
                                 case 1:
                                     newMessage = _a.sent();

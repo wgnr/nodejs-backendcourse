@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.mjs",
   "dependencies": {
+    "@types/sqlite3": "^3.1.7",
     "express": "^4.17.1",
     "socket.io": "^3.1.1",
+    "sqlite3": "^5.0.2",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -22,7 +24,7 @@
   },
   "scripts": {
     "start": "nodemon ./dist/server.js",
-    "dev": "nodemon --exec ts-node index.ts",
+    "dev": "nodemon --exec ts-node ./src/server.ts",
     "ServerES6toJS5": "babel ./src/**/*.mjs -d ./distBabel",
     "ServerTStoJS5": "tsc"
   },

@@ -4,7 +4,8 @@ import { Server, Socket } from "socket.io";
 import path from "path";
 import APIroutes from "./routes/index";
 import { db } from "./db/Archivo";
-import { dbMessages } from "./db/Messages";
+// import { dbMessages } from "./db/Messages";
+import dbMessages from "./db/Sqlite3";
 const __dirname = path.resolve();
 const app = express();
 export const httpServer = createServer(app);
@@ -22,6 +23,11 @@ const server = httpServer.listen(PORT, () => {
 
 // An error while serving
 server.on("error", (error) => console.error(`Error in server!!!!!\n${error}`));
+
+// CLose DB before exit
+process.on("exit", () => {
+  dbMessages.exit();
+});
 
 io.on("connection", async (socket) => {
   // When user connect: pass to him all productos
@@ -67,7 +73,7 @@ export async function generateTable() {
   `;
 }
 
-// const messages = [];
+const messages = [];
 
 async function handleMessages(socket: Socket) {
   // Add socket to chat room
@@ -78,11 +84,11 @@ async function handleMessages(socket: Socket) {
   const messages = await dbMessages.getAll();
   socket.emit("chat", messages);
 
-  socket.on("chat", async (from, msg) => {
+  socket.on("chat", async (fromUser, msg) => {
     const newMessage = await dbMessages.add({
       date: new Date().toLocaleString(),
       msg,
-      from,
+      fromUser,
     });
 
     io.to("generalChat").emit("chat", [newMessage]);

@@ -76,9 +76,9 @@
         });
 
         socket.on("chat", (messages) => {
-          const templateNewMessage = ({ date, msg, from }) => `
+          const templateNewMessage = ({ date, msg, fromUser }) => `
           <li class="list-group-item">
-              <span class="chatMsgEmail">${from}</span>
+              <span class="chatMsgEmail">${fromUser}</span>
               [<span class="chatMsgTimestamp">${date}</span>]:
               <span class="chatMsgMessage">${msg}</span>
           </li>

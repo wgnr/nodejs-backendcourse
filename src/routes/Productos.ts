@@ -12,7 +12,7 @@ router.get("", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+  const id: string = req.params.id;
   const producto = await db.getById(id);
 
   if (!producto)
