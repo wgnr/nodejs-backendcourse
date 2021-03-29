@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import express from "express";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
@@ -9,6 +10,7 @@ const __dirname = path.resolve();
 const app = express();
 export const httpServer = createServer(app);
 export const io = new Server(httpServer);
+
 const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
@@ -17,7 +19,19 @@ app.use("/", express.static(`${__dirname}/public`));
 app.use("/api", APIroutes);
 
 const server = httpServer.listen(PORT, () => {
-  console.log(`Server up on port ${PORT}`);
+  console.log(`✔ Server up on port ${PORT}`);
+
+  mongoose
+    .connect("mongodb://localhost/ecommerce", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then((r) => console.log(`✔ Connected to DB`))
+    .catch((e) => {
+      console.error(`❌ Cannot connect to DB... exiting... `);
+      console.error(e);
+      process.exit();
+    });
 });
 
 // An error while serving
