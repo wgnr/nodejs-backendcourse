@@ -40,6 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateTable = exports.newItemAdded = exports.io = exports.httpServer = void 0;
+var mongoose_1 = __importDefault(require("mongoose"));
 var express_1 = __importDefault(require("express"));
 var http_1 = require("http");
 var socket_io_1 = require("socket.io");
@@ -57,7 +58,18 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use("/", express_1.default.static(__dirname + "/public"));
 app.use("/api", index_1.default);
 var server = exports.httpServer.listen(PORT, function () {
-    console.log("Server up on port " + PORT);
+    console.log("\u2714 Server up on port " + PORT);
+    mongoose_1.default
+        .connect("mongodb://localhost/ecommerce", {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+        .then(function (r) { return console.log("\u2714 Connected to DB"); })
+        .catch(function (e) {
+        console.error("\u274C Cannot connect to DB... exiting... ");
+        console.error(e);
+        process.exit();
+    });
 });
 // An error while serving
 server.on("error", function (error) { return console.error("Error in server!!!!!\n" + error); });

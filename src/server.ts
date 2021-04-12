@@ -6,6 +6,7 @@ import path from "path";
 import APIroutes from "./routes/index";
 import { db } from "./db/Archivo";
 import { dbMessages } from "./db/Messages";
+import { IreceivedChatMessage, IchatMessage } from "./models/Messaje";
 const __dirname = path.resolve();
 const app = express();
 export const httpServer = createServer(app);
@@ -81,8 +82,6 @@ export async function generateTable() {
   `;
 }
 
-// const messages = [];
-
 async function handleMessages(socket: Socket) {
   // Add socket to chat room
   // I know it's weird, everyone joins the room, but, fo.
@@ -92,13 +91,17 @@ async function handleMessages(socket: Socket) {
   const messages = await dbMessages.getAll();
   socket.emit("chat", messages);
 
-  socket.on("chat", async (from, msg) => {
-    const newMessage = await dbMessages.add({
+  // Get chats from frontend
+  socket.on("chat", async (msg: IreceivedChatMessage) => {
+    console.log(msg);
+    const chatMessage: IchatMessage = {
       date: new Date().toLocaleString(),
-      msg,
-      from,
-    });
+      ...msg,
+    };
 
-    io.to("generalChat").emit("chat", [newMessage]);
+    await dbMessages.add(chatMessage);
+
+    const messages = await dbMessages.getAll();
+    socket.emit("chat", messages);
   });
 }

@@ -43,15 +43,73 @@
       <div class="chatContainer">
         <h2>Centro de Mensajes</h2>
         <form action="">
-          <input
-            type="email"
-            name="email"
-            id="email"
-            autocomplete="email"
-            placeholder="Ingrese su email"
-            class="form-control"
-            required
-          />
+          <label>
+            <span>Email</span>
+            <input
+              type="email"
+              name="id"
+              id="email"
+              autocomplete="email"
+              placeholder="Ingrese su email"
+              class="form-control"
+              required
+            />
+          </label>
+          <label>
+            <span>Nombre</span>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              autocomplete="name"
+              placeholder="Nombre"
+              class="form-control"
+            />
+          </label>
+          <label>
+            <span>Apellido</span>
+            <input
+              type="text"
+              name="surname"
+              id="surname"
+              autocomplete="family-name"
+              placeholder="Apellido"
+              class="form-control"
+            />
+          </label>
+          <label>
+            <span>Edad</span>
+            <input
+              type="number"
+              name="age"
+              id="age"
+              autocomplete="off"
+              placeholder="Edad"
+              class="form-control"
+            />
+          </label>
+          <label>
+            <span>Alias</span>
+            <input
+              type="text"
+              name="alias"
+              id="alias"
+              autocomplete="nickname"
+              placeholder="Alias"
+              class="form-control"
+            />
+          </label>
+          <label>
+            <span>Avatar</span>
+            <input
+              type="url"
+              name="avatar"
+              id="avatar"
+              autocomplete="url"
+              placeholder="url avatar"
+              class="form-control"
+            />
+          </label>
           <hr class="dropdown-divider" />
           <ol class="list-group chatMessages"></ol>
           <div class="chatBtnsContainer">
@@ -68,6 +126,8 @@
       </div>
 
       <script src="/socket.io/socket.io.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
+
       <script>
         var socket = io();
 
@@ -76,17 +136,34 @@
         });
 
         socket.on("chat", (messages) => {
-          const templateNewMessage = ({ date, msg, from }) => `
-          <li class="list-group-item">
-              <span class="chatMsgEmail">${from}</span>
-              [<span class="chatMsgTimestamp">${date}</span>]:
-              <span class="chatMsgMessage">${msg}</span>
-          </li>
-          `;
+          const schema = normalizr.schema;
+          const denormalize = normalizr.denormalize;
+
+          const userSchema = new schema.Entity("user");
+          const messageSchema = new schema.Entity("message", {
+            author: userSchema,
+          });
+          const messagesSchema = new schema.Entity("messages", {
+            messages: [messageSchema],
+          });
+
+          const messagesDenorm = denormalize(
+            messages.result,
+            messagesSchema,
+            messages.entities
+          );
+
+          const templateNewMessage = ({ date, text, author: { id } }) => `
+                  <li class="list-group-item">
+                      <span class="chatMsgEmail">${id}</span>
+                      [<span class="chatMsgTimestamp">${date}</span>]:
+                      <span class="chatMsgMessage">${text}</span>
+                  </li>
+                  `;
 
           const MessageListDOM = document.querySelector(".chatMessages");
 
-          MessageListDOM.innerHTML += messages
+          MessageListDOM.innerHTML = messagesDenorm.messages
             .map((m) => templateNewMessage(m))
             .join("");
 
@@ -100,10 +177,16 @@
         sendMessageEvent.addEventListener("submit", (e) => {
           e.preventDefault();
 
-          const from = document.querySelector("input[name='email']").value;
           const msg = document.querySelector("input[name='msg']");
 
-          socket.emit("chat", from, msg.value);
+          const message = { text: msg.value, author: {} };
+          ["id", "name", "surname", "age", "alias", "avatar"].forEach(
+            (e) =>
+              (message.author[e] = document.querySelector(
+                `input[name='${e}']`
+              ).value)
+          );
+          socket.emit("chat", message);
 
           msg.value = "";
           msg.focus();

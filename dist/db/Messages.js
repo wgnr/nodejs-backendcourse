@@ -35,96 +35,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dbMessages = void 0;
-var fs_1 = __importDefault(require("fs"));
 var uuid_1 = require("uuid");
-var Archivo = /** @class */ (function () {
-    function Archivo(fileName) {
-        this.fileName = fileName;
-        this.messages = [];
-    }
-    Archivo.prototype.readFile = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var messages, error_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, fs_1.default.promises.readFile(this.fileName, "utf-8")];
-                    case 1:
-                        messages = _a.sent();
-                        this.messages = JSON.parse(messages);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_1 = _a.sent();
-                        console.error("File can't be loaded.", error_1);
-                        this.messages = [];
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
+var Messaje_1 = require("../models/Messaje");
+function getAll() {
+    return __awaiter(this, void 0, void 0, function () {
+        var messajes;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, Messaje_1.Messajes.find()];
+                case 1:
+                    messajes = _a.sent();
+                    return [2 /*return*/, messajes];
+            }
         });
-    };
-    Archivo.prototype.writeFile = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var error_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, fs_1.default.promises.writeFile(this.fileName, JSON.stringify(this.messages), "utf-8")];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_2 = _a.sent();
-                        console.error("Error in saving message", error_2);
-                        return [2 /*return*/, false];
-                    case 3: return [2 /*return*/, true];
-                }
-            });
-        });
-    };
-    Archivo.prototype.getAll = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.readFile()];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/, this.messages];
-                }
-            });
-        });
-    };
-    Archivo.prototype.add = function (values) {
-        return __awaiter(this, void 0, void 0, function () {
-            var date, msg, from, newMessage;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        date = values.date, msg = values.msg, from = values.from;
-                        return [4 /*yield*/, this.readFile()];
-                    case 1:
-                        _a.sent();
-                        newMessage = {
+    });
+}
+function add(values) {
+    return __awaiter(this, void 0, void 0, function () {
+        var date, msg, from, messaje;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    date = values.date, msg = values.msg, from = values.from;
+                    return [4 /*yield*/, Messaje_1.Messajes.create({
                             id: uuid_1.v4(),
                             date: date,
                             msg: msg,
                             from: from,
-                        };
-                        this.messages.push(newMessage);
-                        return [4 /*yield*/, this.writeFile()];
-                    case 2: return [2 /*return*/, (_a.sent()) ? newMessage : null];
-                }
-            });
+                        })];
+                case 1:
+                    messaje = _a.sent();
+                    return [2 /*return*/, messaje];
+            }
         });
-    };
-    return Archivo;
-}());
-exports.default = Archivo;
-exports.dbMessages = new Archivo("./db/messages.txt");
+    });
+}
+exports.dbMessages = {
+    getAll: getAll,
+    add: add,
+};
